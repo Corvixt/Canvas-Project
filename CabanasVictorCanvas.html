@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <title>Canvas Project</title>
+ <meta charset="utf-8">
+ <script>
+ var canvas, context;
+ var shapes;
+ var timer, timerRestart;
+ 
+ function makeShapes() {
+	drawText();
+	shapes = [];
+	for(var i = 0; i < 40; i++)
+	{
+		shapes.push(new Shape());
+	}
+ }
+ 
+ function degreesToRadians(degrees) {
+	 return (degrees * Math.PI)/180;
+ }
+ 
+ function Shape(){
+	 this.x = Math.random()*canvas.width;
+	 this.y = Math.random()*canvas.height;
+	 this.vx = Math.random()*30-15;
+	 this.vy = Math.random()*30-15;
+	 var colors = ["red", "blue", "yellow"];
+	 this.color = colors[Math.floor(Math.random()*colors.length)];
+	 this.size = 30;
+ }
+ 
+ function makeTitle() {
+	var lines = [['Great', 'Little', 'Average', ],['World', 'State', 'Prize', 'Dance', 'Feeling'],['I', 'II', 'III', 'IV', 'V']];
+	var title = '';
+	for (var i=0; i<lines.length; i++) {
+		var random = Math.floor(Math.random() * lines[i].length);
+		title += lines[i][random] + ' ';
+	};
+	return(title);
+}
+
+ function drawText() {
+	var title = makeTitle();
+	context.fillStyle = 'white';
+	context.font = 'bold 1em sans-serif';
+	context.textAlign = 'right';
+	context.fillText(title, canvas.width-20, canvas.height-40);
+}
+ 
+ function moveShapes() {
+	 context.globalCompositeOperation = "source-over";
+	 context.fillStyle = "rgba(0, 0, 0, 0.3)";
+	 context.fillRect(0, 0, canvas.width, canvas.height);
+	 context.globalCompositeOperation = "lighter";
+	 for(var i = 0; i < shapes.length; i++){
+		var s = shapes[i];
+		//circle
+		if (i%4 === 0){
+			context.beginPath();
+			context.arc(s.x, s.y, s.size, 0, degreesToRadians(360), true);
+			context.fillStyle = s.color;
+			context.fill();
+		}
+		//square
+		else if (i%4 === 1){
+			context.fillStyle = s.color;
+			context.fillRect(s.x, s.y, s.size, s.size);
+		}
+		//rectangle
+		else if (i%4 === 2){
+			context.fillStyle = s.color;
+			context.fillRect(s.x, s.y, s.size, (2 * s.size));		
+		}
+		//triangle
+		else if (i%4 === 3){
+			context.fillStyle = s.color;
+			context.beginPath();
+			context.moveTo((s.x + 75), (s.y + 55));
+			context.lineTo((s.x + 88), (s.y + 75));
+			context.lineTo((s.x + 62), (s.y + 75));
+			context.fill();
+		}
+		s.x += s.vx;
+		s.y += s.vy;
+		if(s.x < -50) s.x = canvas.width+50;
+		if(s.y < -50) s.y = canvas.height+50;
+		if(s.x > canvas.width+50) s.x = -50;
+		if(s.y > canvas.height+50) s.y = -50;
+		s.size -= 1;
+	}
+ }
+ 
+ window.onload = function() {
+ 	 canvas = document.getElementById('canvas');
+	 context = canvas.getContext('2d');
+	 makeShapes();
+	 timer = setInterval(moveShapes, 150);
+	 timerRestart = setInterval(makeShapes, 3500);
+ }
+</script>
+</head>
+<body>
+	<canvas id="canvas" width="720" height="480"></canvas>
+</body>
+</html>
